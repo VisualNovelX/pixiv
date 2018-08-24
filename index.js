@@ -1,5 +1,5 @@
-const cookies = {PHPSESSID: 'your-phpssid'};
 const bluebird = require('bluebird');
+const cookies = {PHPSESSID: 'your-phpssid'};
 const osmosis = require('osmosis');
 const PixivAppApi = new require('pixiv-app-api');
 const pixivImg = require('pixiv-img');
