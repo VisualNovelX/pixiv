@@ -1,0 +1,22 @@
+{
+  "name": "pixiv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "cookie": "^0.3.1",
+    "knex": "^0.15.2",
+    "osmosis": "^1.1.8",
+    "pixiv-app-api": "^0.11.1",
+    "pixiv-img": "^0.3.1",
+    "request": "^2.88.0",
+    "snakecase-keys": "^1.2.0",
+    "sqlite3": "^4.0.2"
+  }
+}
