@@ -1,11 +1,63 @@
 const bluebird = require('bluebird');
-const cookies = {PHPSESSID: 'your-phpssid'};
+const cheerio = require('cheerio');
+const config =  require('config');
+const cookies = {PHPSESSID: 'bd85f7069d2d3498f66f72658697981c; expires=Fri, 14-Sep-2018 21:44:09 GMT; Max-Age=3600; path=/; domain=.pixiv.net; secure; HttpOnly'};
 const osmosis = require('osmosis');
 const PixivAppApi = new require('pixiv-app-api');
 const pixivImg = require('pixiv-img');
+const request = require('request-promise').defaults({baseUrl: 'https://accounts.pixiv.net', resolveWithFullResponse: true});
 const store = require('./store');
+const toughCookie = require('tough-cookie');
 
-const pixiv = new PixivAppApi('username', 'password');
+const pixiv = new PixivAppApi(config.get('pixiv').username, config.get('pixiv').password);
+// PHPSESSID=bd85f7069d2d3498f66f72658697981c; expires=Fri, 14-Sep-2018 21:44:09 GMT; Max-Age=3600; path=/; domain=.pixiv.net; secure; HttpOnly
+const login = () => {
+    request.get({uri: '/login'})
+        .then(res => {
+            const $ = cheerio.load(res.body);
+            const headers = {
+                'content-type': 'application/x-www-form-urlencoded'
+            };
+
+            const setCookies = res.headers['set-cookie'];
+            setCookies
+                .map(cookie => {
+                    cookie
+
+                    return cookie.match(/\w+=\w+; /)
+                })
+                .forEach(cookie => {
+                    const [key, value] = cookie[0].replace('; ', '').split('=');
+                    cookies[key] = value;
+                });
+
+            const jar = toughCookie.CookieJar.fromJSON(cookies);
+
+            return request.post('/api/login?lang=en', {
+                form: {
+                    pixiv_id: config.get('pixiv').username,
+                    captcha: '',
+                    g_recaptcha_response: '',
+                    password: config.get('pixiv').password,
+                    post_key: $('input[name="post_key"]').val(),
+                    source: $('input[name="source"]').val(),
+                    ref: '',
+                    return_to: 'https://accounts.pixiv.net/login?lang=en'
+                },
+                headers,
+                jar
+            });
+        })
+        .then(res => {
+            const setCookies = res.headers['set-cookie'];
+            setCookies.map(cookie => cookie.match(/\w+=\w+; /))
+                .forEach(cookie => {
+                    const [key, value] = cookie.replace(';', '').split('=');
+                    cookies[key] = value;
+                });
+        })
+        .catch(error => console.log('Error logging in: ',error))
+};
 
 const getArtist = illust =>
     new bluebird(resolve => {
@@ -106,6 +158,8 @@ const search = (word, page = 1) => {
 // }
 
 //getArtist({artist: {artist_id: 2799637}});
+
+login();
 
 module.exports = {
     getArtist,

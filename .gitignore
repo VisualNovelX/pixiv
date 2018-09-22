@@ -4,6 +4,9 @@
 /images
 pixiv.db
 
+# config
+local*.json
+
 # compiled output
 /dist
 /tmp

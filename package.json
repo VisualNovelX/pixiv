@@ -10,10 +10,14 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "cheerio": "^1.0.0-rc.2",
+    "config": "^2.0.1",
     "knex": "^0.15.2",
     "osmosis": "^1.1.8",
     "pixiv-app-api": "^0.11.1",
     "pixiv-img": "^0.3.1",
-    "sqlite3": "^4.0.2"
+    "request-promise": "^4.2.2",
+    "sqlite3": "^4.0.2",
+    "tough-cookie": "^2.4.3"
   }
 }
